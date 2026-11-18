@@ -43,8 +43,9 @@
             margin-bottom: 28px;
             display: flex;
             gap: 14px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
         }
-        .notice-icon { font-size: 1.8rem; }
+        .notice-icon { font-size: 1.8rem; line-height: 1.1; }
         .notice-content h3 { font-size: 1.1rem; margin-bottom: 6px; color: #991b1b; }
         .notice-content p { font-size: 0.95rem; margin-bottom: 6px; }
         .notice-content p:last-child { margin-bottom: 0; }
@@ -181,7 +182,8 @@
         <p>Automatycznie wczytane z pliku JSON</p>
     </header>
 
-            <div class="notice-icon">🎁</div>
+    <div class="notice-banner">
+        <div class="notice-icon">🎁</div>
         <div class="notice-content">
             <h3>Mała ważna uwaga – to tylko poglądowe przykłady!</h3>
             <p>
@@ -192,6 +194,7 @@
                 ✨ <strong>Wiadomo – ostateczną decyzję i tak podejmie Mikołaj!</strong> Traktuj tę listę wyłącznie jako poglądowy wzór, bo finalny wybór może wyglądać zupełnie inaczej (albo przynieść jeszcze lepszą niespodziankę).
             </p>
         </div>
+    </div>
 
     <!-- Zakładki kategorii -->
     <div class="filters" id="filter-container"></div>
@@ -223,7 +226,7 @@
 
 <script>
     // Ustawienia
-    const NAZWA_PLIKU_JSON = 'przedmioty.json'; // <-- Upewnij się, że plik na GitHubie nazywa się dokładnie tak samo
+    const NAZWA_PLIKU_JSON = 'przedmioty.json'; 
     const KATEGORIE = [
         { label: "Kubek", jsonName: "Moje" },
         { label: "Chipsy", jsonName: "Chipsy" },

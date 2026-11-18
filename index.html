@@ -254,14 +254,14 @@
 
 <script>
     // =========================================================
-    // TUTAJ PRZYPISUJESZ PLIKI I ICH KATEGORIE
+    // TUTAJ PRZYPISUJESZ PLIKI (bez sprawdzania kategorii w środku)
     // =========================================================
     const KATEGORIE = [
-        { label: "Kubek", plik: "kubek.json", jsonKategoria: "Moje" },        
-        { label: "Chipsy", plik: "chipsy.json", jsonKategoria: "Chipsy" },    
-        { label: "Kapcie", plik: "kapcie.json", jsonKategoria: "Kapcie" },    
-        { label: "Szalik", plik: "szalik.json", jsonKategoria: "Szalik" },    
-        { label: "Carlos Acutis", plik: "carlos.json", jsonKategoria: "Carlos Acutis"} 
+        { label: "Kubek", plik: "kubek.json" },        
+        { label: "Chipsy", plik: "chipsy.json" },    
+        { label: "Kapcie", plik: "kapcie.json" },    
+        { label: "Szalik", plik: "szalik.json" },    
+        { label: "Carlos Acutis", plik: "carlos.json"} 
     ];
     
     let aktualnaKategoria = KATEGORIE[0];
@@ -270,7 +270,7 @@
         const grid = document.getElementById('products-grid');
         const loading = document.getElementById('loading');
         
-        // 1. NAJWAŻNIEJSZE: Czyścimy siatkę przed wczytaniem nowych danych
+        // 1. Czyścimy siatkę przed wczytaniem nowych danych
         grid.innerHTML = '';
         loading.style.display = 'block';
         loading.textContent = "Wczytywanie danych dla kategorii: " + category.label + "...";
@@ -283,32 +283,27 @@
                 throw new Error(`Nie znaleziono pliku ${category.plik} na serwerze.`);
             }
             
-            const wszystkieDane = await response.json();
-            
-            // 3. Filtrujemy po konkretnej kategorii z JSON-a
-            const przefiltrowane = wszystkieDane.filter(item => 
-                item.kategoria && 
-                item.kategoria.trim().toLowerCase() === category.jsonKategoria.trim().toLowerCase()
-            );
+            // Pobieramy całą zawartość pliku - bez filtrowania!
+            const daneZPliku = await response.json();
 
             loading.style.display = 'none';
             
-            // 4. Sprawdzamy, czy po filtrowaniu cokolwiek zostało
-            if (przefiltrowane.length === 0) {
+            // 3. Sprawdzamy, czy plik nie jest pusty
+            if (daneZPliku.length === 0) {
                 grid.innerHTML = `
                     <div class="loading-message" style="grid-column: 1/-1; color: #991b1b; font-weight: bold;">
-                        Plik ${category.plik} istnieje, ale nie ma w nim produktów z kategorią "${category.jsonKategoria}".
+                        Plik ${category.plik} jest pusty.
                     </div>`;
                 return;
             }
 
-            renderProducts(przefiltrowane);
+            renderProducts(daneZPliku);
 
         } catch (err) {
             console.error(err);
             loading.style.display = 'none';
             
-            // 5. Wyświetlamy ładny błąd, zamiast pokazywać stare produkty
+            // 4. Wyświetlamy ładny błąd, zamiast pokazywać stare produkty
             grid.innerHTML = `
                 <div class="loading-message" style="grid-column: 1/-1; color: #dc2626; font-weight: bold; border: 1px dashed #dc2626; border-radius: 12px; padding: 20px;">
                     Ups! Wystąpił problem.<br>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mikołajkowe Inspiracje</title>
+    <style>
+        :root {
+            --primary: #dc2626;
+            --primary-dark: #b91c1c;
+            --bg: #fdf8f6;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --badge-text: #991b1b;
+            --notice-bg: #fffbeb;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        header { text-align: center; margin-bottom: 25px; padding: 15px 0; }
+        header h1 { font-size: 2.1rem; font-weight: 800; margin-bottom: 8px; color: #0f172a; }
+        header p { color: var(--text-muted); font-size: 1.05rem; }
+
+        .notice-banner {
+            background-color: var(--notice-bg);
+            border: 1px solid #fde68a;
+            border-left: 6px solid var(--primary);
+            color: #451a03;
+            padding: 18px 22px;
+            border-radius: 12px;
+            margin-bottom: 28px;
+            display: flex;
+            gap: 14px;
+        }
+        .notice-icon { font-size: 1.8rem; }
+        .notice-content h3 { font-size: 1.1rem; margin-bottom: 6px; color: #991b1b; }
+        .notice-content p { font-size: 0.95rem; margin-bottom: 6px; }
+        .notice-content p:last-child { margin-bottom: 0; }
+
+        .filters {
+            display: flex; flex-wrap: wrap; gap: 10px;
+            justify-content: center; margin-bottom: 28px;
+        }
+        .filter-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 10px 22px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 22px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.08); }
+
+        .card-img-wrapper {
+            width: 100%; height: 210px;
+            background-color: #f1f5f9;
+            position: relative; overflow: hidden;
+        }
+        .card-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .category-badge {
+            position: absolute; top: 12px; left: 12px;
+            background: rgba(255, 255, 255, 0.94);
+            color: var(--badge-text);
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .card-body { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+        .card-desc { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px; flex-grow: 1; }
+
+        .card-footer {
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.78rem; color: var(--text-muted);
+        }
+        .status-tag {
+            background: #fef2f2; color: #991b1b;
+            padding: 3px 9px; border-radius: 6px; font-weight: 600;
+        }
+
+        footer {
+            text-align: center; margin-top: 45px;
+            padding: 15px; color: var(--text-muted); font-size: 0.88rem;
+        }
+
+        .loading-message {
+            text-align: center; font-size: 1.1rem; color: #64748b; 
+            padding: 40px; grid-column: 1 / -1;
+        }
+
+        /* LIGHTBOX */
+        .lightbox {
+            position: fixed; inset: 0;
+            background: rgba(15, 23, 42, 0.82);
+            display: none; align-items: center; justify-content: center;
+            padding: 20px; z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        .lightbox.open { display: flex; }
+        .lightbox-inner {
+            background: #fff; border-radius: 16px;
+            max-width: 780px; width: 100%; max-height: 90vh;
+            overflow: hidden; display: flex; flex-direction: column;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+        }
+        .lightbox-img-wrap {
+            background: #f1f5f9; width: 100%; max-height: 55vh;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .lightbox-img-wrap img { width: 100%; height: 100%; max-height: 55vh; object-fit: contain; }
+        .lightbox-content { padding: 22px 26px 26px; overflow-y: auto; }
+        .lightbox-content .lb-cat {
+            display: inline-block; background: #fef2f2; color: #991b1b;
+            padding: 3px 12px; border-radius: 20px;
+            font-size: 0.72rem; font-weight: 700; margin-bottom: 10px;
+        }
+        .lightbox-content h2 { font-size: 1.45rem; margin-bottom: 10px; }
+        .lightbox-content .lb-desc { color: var(--text-muted); font-size: 0.98rem; margin-bottom: 16px; }
+        .lightbox-content .lb-links { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .lightbox-content .lb-links a {
+            text-decoration: none; padding: 8px 16px; border-radius: 8px;
+            font-weight: 600; font-size: 0.9rem; display: inline-block;
+        }
+        .btn-vinted { background: #007782; color: white; }
+        .btn-olx { background: #002f34; color: white; }
+        .btn-sklep { background: #e2e8f0; color: #1e293b; }
+        .lightbox-close {
+            position: absolute; top: 18px; right: 22px;
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.35);
+            color: #fff; width: 42px; height: 42px; border-radius: 50%;
+            font-size: 1.5rem; cursor: pointer; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .lightbox-close:hover { background: rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🎅 Mikołajkowe Inspiracje</h1>
+        <p>Automatycznie wczytane z pliku JSON</p>
+    </header>
+
+    <div class="notice-banner">
+        <div class="notice-icon">🎁</div>
+        <div class="notice-content">
+            <h3>Mała ważna uwaga – to tylko poglądowe przykłady!</h3>
+            <p>Wszystkie poniższe zdjęcia i opisy to <strong>jedynie przykłady i luźne inspiracje</strong> tego, co mogłoby się tutaj pojawić.</p>
+            <p>✨ <strong>Wiadomo – ostateczną decyzję i tak podejmie Mikołaj!</strong></p>
+        </div>
+    </div>
+
+    <!-- Zakładki kategorii -->
+    <div class="filters" id="filter-container"></div>
+
+    <div class="grid" id="products-grid">
+        <div class="loading-message" id="loading">Wczytywanie danych z pliku JSON...</div>
+    </div>
+
+    <footer>
+        Zestawienie ma charakter wyłącznie poglądowy • Decyzja należy do Mikołaja 🎄
+    </footer>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightbox-close">✕</button>
+    <div class="lightbox-inner">
+        <div class="lightbox-img-wrap">
+            <img id="lb-img" src="" alt="">
+        </div>
+        <div class="lightbox-content">
+            <span class="lb-cat" id="lb-cat"></span>
+            <h2 id="lb-title"></h2>
+            <p class="lb-desc" id="lb-desc"></p>
+            <div class="lb-links" id="lb-links"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Ustawienia
+    const NAZWA_PLIKU_JSON = 'przedmioty.json'; // <-- Upewnij się, że plik na GitHubie nazywa się dokładnie tak samo
+    const KATEGORIE = [
+        { label: "Kubek", jsonName: "Moje" },
+        { label: "Chipsy", jsonName: "Chipsy" },
+        { label: "Kapcie", jsonName: "Kapcie" },
+        { label: "Szalik", jsonName: "Szalik" },
+        { label: "Carlos Acutis", jsonName: "Carlos Acutis" }
+    ];
+    
+    let aktualnaKategoria = KATEGORIE[0];
+    let wszystkieDane = [];
+
+    async function init() {
+        // Wczytaj dane z JSON
+        try {
+            const response = await fetch(NAZWA_PLIKU_JSON);
+            if (!response.ok) throw new Error('Nie znaleziono pliku ' + NAZWA_PLIKU_JSON);
+            
+            wszystkieDane = await response.json();
+            document.getElementById('loading').style.display = 'none';
+            
+            // Zbuduj zakładki
+            initTabs();
+            
+            // Kliknij pierwszą zakładkę
+            const firstBtn = document.querySelector('.filter-btn');
+            if (firstBtn) firstBtn.click();
+
+        } catch (err) {
+            console.error(err);
+            document.getElementById('loading').innerHTML = `
+                <div style="color: #dc2626; font-weight: bold; padding: 20px;">
+                    Błąd podczas wczytywania pliku <strong>${NAZWA_PLIKU_JSON}</strong>.<br>
+                    Upewnij się, że plik znajduje się w tym samym folderze co strona.
+                </div>
+            `;
+        }
+    }
+
+    function initTabs() {
+        const filterContainer = document.getElementById('filter-container');
+        filterContainer.innerHTML = '';
+        
+        KATEGORIE.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn' + (cat.label === aktualnaKategoria.label ? ' active' : '');
+            btn.textContent = cat.label;
+            btn.onclick = () => selectCategory(cat, btn);
+            filterContainer.appendChild(btn);
+        });
+    }
+
+    function selectCategory(category, clickedBtn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        if (clickedBtn) clickedBtn.classList.add('active');
+        aktualnaKategoria = category;
+        filterAndRender();
+    }
+
+    function filterAndRender() {
+        // Filtrujemy dane z JSON-a
+        const przefiltrowane = wszystkieDane.filter(item => 
+            item.kategoria && 
+            item.kategoria.trim().toLowerCase() === aktualnaKategoria.jsonName.trim().toLowerCase()
+        );
+
+        renderProducts(przefiltrowane);
+    }
+
+    function renderProducts(items) {
+        const grid = document.getElementById('products-grid');
+
+        if (!items || items.length === 0) {
+            grid.innerHTML = `
+                <div class="loading-message" style="grid-column: 1/-1; color: #991b1b; font-weight: bold;">
+                    Brak produktów w kategorii "${aktualnaKategoria.label}".
+                </div>`;
+            return;
+        }
+
+        grid.innerHTML = '';
+
+        items.forEach(item => {
+            const imgSrc = item.zdjecie && item.zdjecie.trim() !== "" 
+                ? item.zdjecie 
+                : `https://placehold.co/600x400/f1f5f9/475569?text=${encodeURIComponent(item.nazwa || 'Produkt')}`;
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="card-img-wrapper">
+                    <span class="category-badge">${aktualnaKategoria.label}</span>
+                    <img src="${imgSrc}" alt="${item.nazwa}" class="card-img" onerror="this.src='https://placehold.co/600x400/f1f5f9/475569?text=Brak+zdjecia'">
+                </div>
+                <div class="card-body">
+                    <h2 class="card-title">${item.nazwa}</h2>
+                    <p class="card-desc">${item.opis || 'Brak opisu'}</p>
+                    <div class="card-footer">
+                        <span>ID: #${item.id || '?'}</span>
+                        <span class="status-tag">Poglądowe</span>
+                    </div>
+                </div>
+            `;
+            card.addEventListener('click', () => openLightbox(item, imgSrc));
+            grid.appendChild(card);
+        });
+    }
+
+    // LIGHTBOX
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbCat = document.getElementById('lb-cat');
+    const lbTitle = document.getElementById('lb-title');
+    const lbDesc = document.getElementById('lb-desc');
+    const lbLinks = document.getElementById('lb-links');
+
+    function openLightbox(item, imgSrc) {
+        lbImg.src = imgSrc;
+        lbCat.textContent = aktualnaKategoria.label;
+        lbTitle.textContent = item.nazwa;
+        lbDesc.textContent = item.opis || 'Brak opisu';
+        
+        lbLinks.innerHTML = '';
+        if (item.vinted && item.vinted.trim() !== "") {
+            lbLinks.innerHTML += `<a href="${item.vinted}" target="_blank" class="btn-vinted">Vinted</a>`;
+        }
+        if (item.olx && item.olx.trim() !== "") {
+            lbLinks.innerHTML += `<a href="${item.olx}" target="_blank" class="btn-olx">OLX</a>`;
+        }
+        if (item.sklep && item.sklep.trim() !== "") {
+            lbLinks.innerHTML += `<a href="${item.sklep}" target="_blank" class="btn-sklep">Sklep</a>`;
+        }
+
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeLightbox();
+    });
+
+    // Start
+    init();
+
+</script>
+
+</body>
+</html>

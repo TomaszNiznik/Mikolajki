@@ -257,41 +257,65 @@
     // TUTAJ PRZYPISUJESZ PLIKI I ICH KATEGORIE
     // =========================================================
     const KATEGORIE = [
-        { label: "Kubek", plik: "kubek.json", jsonKategoria: "Moje" },        // W pliku kubek.json szuka "Moje"
-        { label: "Chipsy", plik: "chipsy.json", jsonKategoria: "Chipsy" },    // W pliku chipsy.json szuka "Chipsy"
-        { label: "Kapcie", plik: "kapcie.json", jsonKategoria: "Kapcie" },    // W pliku kapcie.json szuka "Kapcie"
-        { label: "Szalik", plik: "szalik.json", jsonKategoria: "Szalik" },    // W pliku szalik.json szuka "Szalik"
-        { label: "Carlos Acutis", plik: "carlos.json", jsonKategoria: "Carlos Acutis"} // W pliku carlos.json szuka "Carlos Acutis"
+        { label: "Kubek", plik: "kubek.json", jsonKategoria: "Moje" },        
+        { label: "Chipsy", plik: "chipsy.json", jsonKategoria: "Chipsy" },    
+        { label: "Kapcie", plik: "kapcie.json", jsonKategoria: "Kapcie" },    
+        { label: "Szalik", plik: "szalik.json", jsonKategoria: "Szalik" },    
+        { label: "Carlos Acutis", plik: "carlos.json", jsonKategoria: "Carlos Acutis"} 
     ];
     
     let aktualnaKategoria = KATEGORIE[0];
 
     async function loadDataForCategory(category) {
-        document.getElementById('loading').style.display = 'block';
-        document.getElementById('loading').textContent = "Wczytywanie danych...";
+        const grid = document.getElementById('products-grid');
+        const loading = document.getElementById('loading');
+        
+        // 1. NAJWAŻNIEJSZE: Czyścimy siatkę przed wczytaniem nowych danych
+        grid.innerHTML = '';
+        loading.style.display = 'block';
+        loading.textContent = "Wczytywanie danych dla kategorii: " + category.label + "...";
         
         try {
             const response = await fetch(category.plik);
-            if (!response.ok) throw new Error('Nie znaleziono pliku ' + category.plik);
+            
+            // 2. Jeśli plik nie istnieje (np. nie ma kapcie.json), rzucamy błąd
+            if (!response.ok) {
+                throw new Error(`Nie znaleziono pliku ${category.plik} na serwerze.`);
+            }
             
             const wszystkieDane = await response.json();
             
-            // Filtrujemy po konkretnej kategorii z JSON-a
+            // 3. Filtrujemy po konkretnej kategorii z JSON-a
             const przefiltrowane = wszystkieDane.filter(item => 
                 item.kategoria && 
                 item.kategoria.trim().toLowerCase() === category.jsonKategoria.trim().toLowerCase()
             );
 
-            document.getElementById('loading').style.display = 'none';
+            loading.style.display = 'none';
+            
+            // 4. Sprawdzamy, czy po filtrowaniu cokolwiek zostało
+            if (przefiltrowane.length === 0) {
+                grid.innerHTML = `
+                    <div class="loading-message" style="grid-column: 1/-1; color: #991b1b; font-weight: bold;">
+                        Plik ${category.plik} istnieje, ale nie ma w nim produktów z kategorią "${category.jsonKategoria}".
+                    </div>`;
+                return;
+            }
+
             renderProducts(przefiltrowane);
 
         } catch (err) {
             console.error(err);
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('loading').innerHTML = `
-                <div style="color: #dc2626; font-weight: bold; padding: 20px;">
-                    Brak danych lub błąd pliku <strong>${category.plik}</strong>.<br>
-                    Upewnij się, że plik istnieje i jest poprawny.
+            loading.style.display = 'none';
+            
+            // 5. Wyświetlamy ładny błąd, zamiast pokazywać stare produkty
+            grid.innerHTML = `
+                <div class="loading-message" style="grid-column: 1/-1; color: #dc2626; font-weight: bold; border: 1px dashed #dc2626; border-radius: 12px; padding: 20px;">
+                    Ups! Wystąpił problem.<br>
+                    <span style="font-size: 0.9rem; font-weight: normal; margin-top: 10px; display: block;">
+                        ${err.message}<br>
+                        Upewnij się, że plik o tej nazwie znajduje się w repozytorium GitHub.
+                    </span>
                 </div>
             `;
         }
@@ -328,16 +352,7 @@
 
     function renderProducts(items) {
         const grid = document.getElementById('products-grid');
-
-        if (!items || items.length === 0) {
-            grid.innerHTML = `
-                <div class="loading-message" style="grid-column: 1/-1; color: #991b1b; font-weight: bold;">
-                    Brak produktów w kategorii "${aktualnaKategoria.label}".
-                </div>`;
-            return;
-        }
-
-        grid.innerHTML = '';
+        grid.innerHTML = ''; // Czyścimy przed rysowaniem
 
         items.forEach(item => {
             const imgSrc = item.zdjecie && item.zdjecie.trim() !== "" 
@@ -365,6 +380,7 @@
         });
     }
 
+    // LIGHTBOX
     const lightbox = document.getElementById('lightbox');
     const lbImg = document.getElementById('lb-img');
     const lbCat = document.getElementById('lb-cat');

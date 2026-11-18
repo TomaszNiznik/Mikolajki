@@ -68,6 +68,26 @@
         .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
         .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
+        /* Specjalna notka dla Chipsów */
+        .special-note {
+            display: none; /* Domyślnie ukryta, pokaże się tylko dla Chipsów */
+            background: #f8fafc;
+            border: 1px dashed #94a3b8;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            color: #334155;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            animation: fadeIn 0.3s ease;
+        }
+        .special-note.visible { display: block; }
+        .special-note h3 { margin-bottom: 10px; color: #0f172a; font-size: 1.2rem; }
+        .special-note p { margin-bottom: 10px; }
+        .special-note p:last-child { margin-bottom: 0; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -179,19 +199,19 @@
 <div class="container">
     <header>
         <h1>🎅 Mikołajkowe Inspiracje</h1>
-        <p>Automatycznie wczytane z pliku JSON</p>
+        <p>Automatycznie wczytane z plików JSON</p>
     </header>
 
     <div class="notice-banner">
         <div class="notice-icon">🎁</div>
         <div class="notice-content">
-            <h3>Mała ważna uwaga – to tylko poglądowe przykłady!</h3>
+            <h3>Mała ważna uwaga to tylko poglądowe przykłady</h3>
             <p>
-                Wszystkie poniższe zdjęcia i opisy to <strong>jedynie przykłady i luźne inspiracje</strong> tego, co mogłoby się tutaj pojawić. 
-                Zestawienie odzwierciedla <strong>stan na 18 listopada</strong> (część rzeczy mogła już zniknąć lub zostać wykupiona).
+                Wszystkie poniższe zdjęcia i opisy to jedynie przykłady i luźne inspiracje tego co mogłoby się tutaj pojawić. 
+                Zestawienie odzwierciedla stan na 18 listopada część rzeczy mogła już zniknąć lub zostać wykupiona.
             </p>
             <p>
-                ✨ <strong>Wiadomo – ostateczną decyzję i tak podejmie Mikołaj!</strong> Traktuj tę listę wyłącznie jako poglądowy wzór, bo finalny wybór może wyglądać zupełnie inaczej (albo przynieść jeszcze lepszą niespodziankę).
+                Wiadomo ostateczną decyzję i tak podejmie Mikołaj. Traktuj tę listę wyłącznie jako poglądowy wzór bo finalny wybór może wyglądać zupełnie inaczej albo przynieść jeszcze lepszą niespodziankę.
             </p>
         </div>
     </div>
@@ -199,8 +219,19 @@
     <!-- Zakładki kategorii -->
     <div class="filters" id="filter-container"></div>
 
+    <!-- Specjalna notka dla Chipsów -->
+    <div class="special-note" id="chipsNote">
+        <h3>Chipsy luźne propozycje dla Mikołaja</h3>
+        <p>Hej Tutaj znajdziesz moje poglądowe propozycje chipsów. Celowo wrzuciłem tu w większości takie smaki i marki których pewnie ani ja ani Ty nie jedliśmy ale śmiało możesz sugerować się tymi zdjęciami w Googlu żeby zobaczyć jak one wyglądają na żywo</p>
+        <p>Muszę zaznaczyć że to jest tylko i wyłącznie charakter poglądowy. Te przykładowe zdjęcia i linki pod nimi do różnych sklepów Allegro czy innych stron są dodane specjalnie żeby produkt po prostu mi się wyświetlił na stronie. Inaczej niestety by to nie zagrało więc muszą tam być.</p>
+        <p>I jeszcze jedno to nie są najniższe ceny. W wielu miejscach da się te produkty znaleźć zdecydowanie taniej więc spokojnie można poszukać lepszych okazji. Raczje pewny jestem że za miesiąc lepiej jej to cenowo wyjdzie Mikołajowi.</p>
+        <p>A tak w ogóle to chyba najbardziej zależy mi na tym żeby były to jakieś nowości i ciekawe niestandardowe smaki. Najczęściej takie perełki znajdziesz w Dealz Action czasem w jakichś supermarketach. Można też po prostu coś wymyślić i pójść w te znane marki jak Lays Crunchips czy Pringles. W sumie fajnie by było znaleźć jakieś nowe smaki żebyśmy mogli razem zjeść.</p>
+        <p>Niektóre rzeczy są ponad to co napisałaś na swojej liście ale tym się nie sugeruj. Pamiętaj o liście w dużej mierze.</p>
+        <p>I tak jak już ustaliliśmy co do listy wymagań to i tak wszystko jest w Twoich rękach</p>
+    </div>
+
     <div class="grid" id="products-grid">
-        <div class="loading-message" id="loading">Wczytywanie danych z pliku JSON...</div>
+        <div class="loading-message" id="loading">Wczytywanie danych...</div>
     </div>
 
     <footer>
@@ -225,46 +256,47 @@
 </div>
 
 <script>
-    // Ustawienia
-    const NAZWA_PLIKU_JSON = 'przedmioty.json'; 
+    // =========================================================
+    // TUTAJ PRZYPISUJESZ PLIKI JSON DO ZAKŁADEK
+    // =========================================================
     const KATEGORIE = [
-        { label: "Kubek", jsonName: "Moje" },
-        { label: "Chipsy", jsonName: "Chipsy" },
-        { label: "Kapcie", jsonName: "Kapcie" },
-        { label: "Szalik", jsonName: "Szalik" },
-        { label: "Carlos Acutis", jsonName: "Carlos Acutis" }
+        { label: "Kubek", plik: "kubek.json" },        // <-- Wgrywasz plik kubek.json
+        { label: "Chipsy", plik: "chipsy.json" },      // <-- Wgrywasz plik chipsy.json
+        { label: "Kapcie", plik: "kapcie.json" },      // <-- Wgrywasz plik kapcie.json
+        { label: "Szalik", plik: "szalik.json" },      // <-- Wgrywasz plik szalik.json
+        { label: "Carlos Acutis", plik: "carlos.json"} // <-- Wgrywasz plik carlos.json
     ];
     
     let aktualnaKategoria = KATEGORIE[0];
-    let wszystkieDane = [];
+    let wszystkieDane = []; // Tu trzymamy dane dla aktualnie wybranej kategorii
 
-    async function init() {
-        // Wczytaj dane z JSON
+    // Funkcja wczytująca konkretny plik JSON
+    async function loadDataForCategory(category) {
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('loading').textContent = "Wczytywanie danych...";
+        
         try {
-            const response = await fetch(NAZWA_PLIKU_JSON);
-            if (!response.ok) throw new Error('Nie znaleziono pliku ' + NAZWA_PLIKU_JSON);
+            const response = await fetch(category.plik);
+            if (!response.ok) throw new Error('Nie znaleziono pliku ' + category.plik);
             
             wszystkieDane = await response.json();
             document.getElementById('loading').style.display = 'none';
             
-            // Zbuduj zakładki
-            initTabs();
-            
-            // Kliknij pierwszą zakładkę
-            const firstBtn = document.querySelector('.filter-btn');
-            if (firstBtn) firstBtn.click();
+            renderProducts(wszystkieDane);
 
         } catch (err) {
             console.error(err);
+            document.getElementById('loading').style.display = 'block';
             document.getElementById('loading').innerHTML = `
                 <div style="color: #dc2626; font-weight: bold; padding: 20px;">
-                    Błąd podczas wczytywania pliku <strong>${NAZWA_PLIKU_JSON}</strong>.<br>
-                    Upewnij się, że plik znajduje się w tym samym folderze co strona.
+                    Brak danych lub błąd pliku <strong>${category.plik}</strong>.<br>
+                    Upewnij się, że plik istnieje.
                 </div>
             `;
         }
     }
 
+    // Budowanie zakładek
     function initTabs() {
         const filterContainer = document.getElementById('filter-container');
         filterContainer.innerHTML = '';
@@ -278,23 +310,26 @@
         });
     }
 
+    // Wybór zakładki
     function selectCategory(category, clickedBtn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         if (clickedBtn) clickedBtn.classList.add('active');
+        
         aktualnaKategoria = category;
-        filterAndRender();
+        
+        // Notka dla Chipsów
+        const chipsNote = document.getElementById('chipsNote');
+        if (category.label === "Chipsy") {
+            chipsNote.classList.add('visible');
+        } else {
+            chipsNote.classList.remove('visible');
+        }
+
+        // Ładujemy dane z odpowiedniego pliku
+        loadDataForCategory(category);
     }
 
-    function filterAndRender() {
-        // Filtrujemy dane z JSON-a
-        const przefiltrowane = wszystkieDane.filter(item => 
-            item.kategoria && 
-            item.kategoria.trim().toLowerCase() === aktualnaKategoria.jsonName.trim().toLowerCase()
-        );
-
-        renderProducts(przefiltrowane);
-    }
-
+    // Renderowanie produktów
     function renderProducts(items) {
         const grid = document.getElementById('products-grid');
 
@@ -377,7 +412,9 @@
     });
 
     // Start
-    init();
+    initTabs();
+    // Ładujemy dane dla pierwszej zakładki przy starcie
+    loadDataForCategory(aktualnaKategoria);
 
 </script>
 

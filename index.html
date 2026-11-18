@@ -70,7 +70,7 @@
 
         /* Specjalna notka dla Chipsów */
         .special-note {
-            display: none; /* Domyślnie ukryta, pokaże się tylko dla Chipsów */
+            display: none; 
             background: #f8fafc;
             border: 1px dashed #94a3b8;
             border-radius: 12px;
@@ -216,10 +216,8 @@
         </div>
     </div>
 
-    <!-- Zakładki kategorii -->
     <div class="filters" id="filter-container"></div>
 
-    <!-- Specjalna notka dla Chipsów -->
     <div class="special-note" id="chipsNote">
         <h3>Chipsy luźne propozycje dla Mikołaja</h3>
         <p>Hej Tutaj znajdziesz moje poglądowe propozycje chipsów. Celowo wrzuciłem tu w większości takie smaki i marki których pewnie ani ja ani Ty nie jedliśmy ale śmiało możesz sugerować się tymi zdjęciami w Googlu żeby zobaczyć jak one wyglądają na żywo</p>
@@ -239,7 +237,6 @@
     </footer>
 </div>
 
-<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
     <button class="lightbox-close" id="lightbox-close">✕</button>
     <div class="lightbox-inner">
@@ -257,20 +254,18 @@
 
 <script>
     // =========================================================
-    // TUTAJ PRZYPISUJESZ PLIKI JSON DO ZAKŁADEK
+    // TUTAJ PRZYPISUJESZ PLIKI I ICH KATEGORIE
     // =========================================================
     const KATEGORIE = [
-        { label: "Kubek", plik: "kubek.json" },        // <-- Wgrywasz plik kubek.json
-        { label: "Chipsy", plik: "chipsy.json" },      // <-- Wgrywasz plik chipsy.json
-        { label: "Kapcie", plik: "kapcie.json" },      // <-- Wgrywasz plik kapcie.json
-        { label: "Szalik", plik: "szalik.json" },      // <-- Wgrywasz plik szalik.json
-        { label: "Carlos Acutis", plik: "carlos.json"} // <-- Wgrywasz plik carlos.json
+        { label: "Kubek", plik: "kubek.json", jsonKategoria: "Moje" },        // W pliku kubek.json szuka "Moje"
+        { label: "Chipsy", plik: "chipsy.json", jsonKategoria: "Chipsy" },    // W pliku chipsy.json szuka "Chipsy"
+        { label: "Kapcie", plik: "kapcie.json", jsonKategoria: "Kapcie" },    // W pliku kapcie.json szuka "Kapcie"
+        { label: "Szalik", plik: "szalik.json", jsonKategoria: "Szalik" },    // W pliku szalik.json szuka "Szalik"
+        { label: "Carlos Acutis", plik: "carlos.json", jsonKategoria: "Carlos Acutis"} // W pliku carlos.json szuka "Carlos Acutis"
     ];
     
     let aktualnaKategoria = KATEGORIE[0];
-    let wszystkieDane = []; // Tu trzymamy dane dla aktualnie wybranej kategorii
 
-    // Funkcja wczytująca konkretny plik JSON
     async function loadDataForCategory(category) {
         document.getElementById('loading').style.display = 'block';
         document.getElementById('loading').textContent = "Wczytywanie danych...";
@@ -279,10 +274,16 @@
             const response = await fetch(category.plik);
             if (!response.ok) throw new Error('Nie znaleziono pliku ' + category.plik);
             
-            wszystkieDane = await response.json();
-            document.getElementById('loading').style.display = 'none';
+            const wszystkieDane = await response.json();
             
-            renderProducts(wszystkieDane);
+            // Filtrujemy po konkretnej kategorii z JSON-a
+            const przefiltrowane = wszystkieDane.filter(item => 
+                item.kategoria && 
+                item.kategoria.trim().toLowerCase() === category.jsonKategoria.trim().toLowerCase()
+            );
+
+            document.getElementById('loading').style.display = 'none';
+            renderProducts(przefiltrowane);
 
         } catch (err) {
             console.error(err);
@@ -290,13 +291,12 @@
             document.getElementById('loading').innerHTML = `
                 <div style="color: #dc2626; font-weight: bold; padding: 20px;">
                     Brak danych lub błąd pliku <strong>${category.plik}</strong>.<br>
-                    Upewnij się, że plik istnieje.
+                    Upewnij się, że plik istnieje i jest poprawny.
                 </div>
             `;
         }
     }
 
-    // Budowanie zakładek
     function initTabs() {
         const filterContainer = document.getElementById('filter-container');
         filterContainer.innerHTML = '';
@@ -310,14 +310,12 @@
         });
     }
 
-    // Wybór zakładki
     function selectCategory(category, clickedBtn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         if (clickedBtn) clickedBtn.classList.add('active');
         
         aktualnaKategoria = category;
         
-        // Notka dla Chipsów
         const chipsNote = document.getElementById('chipsNote');
         if (category.label === "Chipsy") {
             chipsNote.classList.add('visible');
@@ -325,11 +323,9 @@
             chipsNote.classList.remove('visible');
         }
 
-        // Ładujemy dane z odpowiedniego pliku
         loadDataForCategory(category);
     }
 
-    // Renderowanie produktów
     function renderProducts(items) {
         const grid = document.getElementById('products-grid');
 
@@ -369,7 +365,6 @@
         });
     }
 
-    // LIGHTBOX
     const lightbox = document.getElementById('lightbox');
     const lbImg = document.getElementById('lb-img');
     const lbCat = document.getElementById('lb-cat');
@@ -411,9 +406,7 @@
         if (e.key === 'Escape') closeLightbox();
     });
 
-    // Start
     initTabs();
-    // Ładujemy dane dla pierwszej zakładki przy starcie
     loadDataForCategory(aktualnaKategoria);
 
 </script>

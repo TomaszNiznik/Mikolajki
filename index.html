@@ -227,13 +227,20 @@
         <p>I tak jak już ustaliliśmy co do listy wymagań to i tak wszystko jest w Twoich rękach</p>
     </div>
 
-    <!-- NOTKA DLA KAPCI (Z DODANĄ UWAGĄ O CENIE) -->
+    <!-- NOTKA DLA KAPCI -->
     <div class="special-note" id="kapcieNote">
         <h3>Kapcie przykładowe propozycje</h3>
         <p>Hej to jest taki przykładowy zbiór tego co mogłoby mi się spodobać ale wiadomo jak to jest. Stan na 20 listopada i są to przykładowe modele które mogą mi się spodobać ale to i tak Mikołaj wybiera bo Mikołaj jest jedyny pod słońcem pod gwiazdką haha.</p>
         <p>Tak jak wspomniałem mam rozmiar 42 42,5 43 nawet 43,5 a najlepiej po numerze wkładki 26,5 27. Najlepiej żeby były lekko szersze bo noga gruba niestety haha jak ja nie mogę być za waskię haha.</p>
         <p>Moim zdaniem takie kapcie nie powinny kosztować więcej jak 30 zł może max 40 nie licząc dostawy jeśli byś się na takie coś zdecydowała.</p>
         <p>To są tylko propozycje muszę zaznaczyć że wiele można taniej znaleźć jeszcze lepszych nowszych może w sklepach teraz na pewno są różne promocje przed świętami czy innymi rzeczami i wiele z tych kapci można dostać w Pepco na przykład czy Diversie podobne modele czy innych sklepach takich sieciowych i taniej mogą nawet być.</p>
+    </div>
+
+    <!-- NOTKA DLA CARLOSA ACUTISA -->
+    <div class="special-note" id="carlosNote">
+        <h3>Carlos Acutis propozycje</h3>
+        <p>Hej tutaj są to propozycje i prosiłbym Mikołaja o to żeby wybrał tylko jedną z tych rzeczy moim zdaniem tę która będzie najlepsza. Moim zdaniem powinien być sam Carlos Acutis ale są też inne rzeczy w tej zakładce jak książki czy różne inne przedmioty.</p>
+        <p>Jeszcze taka podpowiedź jeśli byś na przykład zamawiał z Allegro to czasem warto coś dobrać bo będzie dostawa za darmo jak nie brakuje dużo. Ale lepiej mieć jakąś rzecz niż płacić za dostawę. Chociaż wychodzi cenowo że może czasem przez to drożej to masz rzecz a nie płacisz za dostawę. Zawsze to jakiś plus co nie.</p>
     </div>
 
     <div class="grid" id="products-grid">
@@ -349,6 +356,15 @@
                 kapcieNote.classList.add('visible');
             } else {
                 kapcieNote.classList.remove('visible');
+            }
+        }
+
+        const carlosNote = document.getElementById('carlosNote');
+        if (carlosNote) {
+            if (category.label === "Carlos Acutis") {
+                carlosNote.classList.add('visible');
+            } else {
+                carlosNote.classList.remove('visible');
             }
         }
 
